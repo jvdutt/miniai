@@ -4,7 +4,7 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils import Hook,to_cpu
+from miniai.utils import Hook,to_cpu,show_images
 
 from functools import partial
 # cell ends
@@ -24,13 +24,10 @@ class ActivationStats():
     def get_dead_percentage(self,h):
         hist = torch.stack(h.stats[2])
         return hist[:,0]/hist.sum(1)
-    def plot_histograms(self,figsize=None):
-        for h in self.hooks:
-            fig,ax = plt.subplots(figsize=figsize)
-            ax.imshow(self.get_hist_image(h))
-            ax.invert_yaxis()
-            ax.set_yticks([_*2 for _ in range(20)],labels=[_/2 for _ in range(20)])
-            plt.show()
+    def plot_histograms(self,imgs_per_row = 2,scale=scale,tfmx = lambda x:x.flip(0),tfmy = lambda y:str(y),**kwargs):
+        hists = [self.get_hist_image(h) for h in self.hooks]
+        labels = list(range(len(hists))
+        show_images(hists,labels,len(hists),imgs_per_row = imgs_per_row,scale=scale,tfmx = tfmx,tfmy = tfmy,**kwargs)
     def plot_dead_chart(self,figsize=None):
         for h in self.hooks:
             fig,ax = plt.subplots(figsize=figsize)

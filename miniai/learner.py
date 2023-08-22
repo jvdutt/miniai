@@ -4,7 +4,7 @@ from torchmetrics import MeanMetric
 from IPython.display import display
 import matplotlib.pyplot as plt
 
-from utils import to_cpu,CancelFitException,CancelBatchException,CancelEpochException
+from miniai.utils import to_cpu,CancelFitException,CancelBatchException,CancelEpochException
 # cell ends
 
 # cell starts

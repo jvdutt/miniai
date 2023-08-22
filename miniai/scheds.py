@@ -2,7 +2,7 @@
 import torch
 import math
 import matplotlib.pyplot as plt
-from utils import to_cpu,CancelEpochException,CancelFitException
+from miniai.utils import to_cpu,CancelEpochException,CancelFitException
 # cell ends
 
 # cell starts
