@@ -56,6 +56,7 @@ class Normalizer(nn.Module):
 class LsuvInit():
     def __init__(self,learner,modules,dl,take_first_batch=False,max_iter=10,tol=1e-5,orthogonal=True,device=None):
         if device is None:device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.device = device
         learner.model.to(device)
         data = next(iter(dl)) if take_first_batch else iter(self.circle(dl))
         for m in modules:
@@ -77,7 +78,7 @@ class LsuvInit():
             
     def orthogonal_init(self,m,orth):
         if orth and hasattr(m,"weight") and (m.weight is not None):
-            with torch.no_grad():m.weight.data = torch.from_numpy(self.svd_orthonormal(m.weight.numpy()))
+            with torch.no_grad():m.weight.data = self.to_device(torch.from_numpy(self.svd_orthonormal(m.weight.cpu().numpy())),self.device)
             
     def svd_orthonormal(self,w):
         shape = w.shape
