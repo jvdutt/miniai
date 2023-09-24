@@ -92,6 +92,42 @@ class Learner():
             
 # cell ends
 
+class MPLearner(Learner):
+    def __init__(self,model,loss_func,optim,cbs=[],autocast_enable=False,gradscale_enable=False):
+        self.model,self.loss_func,self.optim,self.cbs = model,loss_func,optim,cbs
+        for cb in self.cbs:cb.learner = self
+        self.scaler = torch.cuda.amp.GradScaler()
+        self.autocast_enable,self.gradscale_enable = autocast_enable,gradscale_enable
+        
+    def enable_amp(self):
+        self.autocast_enable,self.gradscale_enable = True,True
+    def disable_amp(self):
+        self.autocast_enable,self.gradscale_enable = False,False
+        
+    def predict(self):
+        if self.autocast_enable:
+            self.autocast = torch.autocast(device_type="cuda",dtype=torch.float16)
+            self.autocast.__enter__()
+        self.xb,self.yb = self.batch
+        self.preds = self.model(self.xb)
+            
+    def get_loss(self):
+        self.loss = self.loss_func(self.preds,self.yb)
+        if self.autocast_enable:
+            self.autocast.__exit__(None,None,None)
+    def backward(self):
+        if self.gradscale_enable:
+            self.scaler.scale(self.loss).backward()
+        else:
+            self.loss.backward()
+    def step(self):
+        if self.gradscale_enable:
+            self.scaler.step(self.optim)
+            self.scaler.update()
+        else:
+            self.optim.step()
+        
+
 # cell starts
 class DeviceCB():
     def __init__(self,device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')):

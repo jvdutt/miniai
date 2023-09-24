@@ -18,7 +18,7 @@ class ActivationStats():
         out = to_cpu(out)
         h.stats[0].append(out.mean())
         h.stats[1].append(out.std())
-        h.stats[2].append(out.abs().histc(40,0,10))
+        h.stats[2].append(out.abs().float().histc(40,0,10))
     def get_dead_percentage(self,h):
         hist = torch.stack(h.stats[2])
         return hist[:,0]/hist.sum(1)

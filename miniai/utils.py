@@ -111,9 +111,13 @@ def summary(learner,dl):
 # cell ends
 
 # cell starts
-def show_images(imgs,labels=None,n=15,imgs_per_row = 5,scale=1,tfmx = lambda x:x,tfmy = lambda y:str(y),**kwargs):
+def show_images(imgs,labels=None,n=None,imgs_per_row = 4,scale=1,tfmx = lambda x:x,tfmy = lambda y:str(y),**kwargs):
     if labels is not None:assert(len(imgs)==len(labels))
-    idxs = random.sample(range(len(imgs)),n)
+    if n is None:
+        n = len(imgs)
+        idxs = range(n)
+    else:
+        idxs = random.sample(range(len(imgs)),n)
     num_rows,num_cols = math.ceil(n/imgs_per_row),imgs_per_row
     figsize=(num_cols*scale,num_rows*scale)
     fig, axs = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False,figsize=figsize)
